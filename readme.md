@@ -19,7 +19,7 @@ The dataset used in this analysis can be found on [Kaggle](https://www.kaggle.co
 ## Installation
 Clone the repo:
 ```
-git clone https://github.com/kangarooalpha/oral_cancer_survival_predictor.git
+git clone https://github.com/KangarooAlpha/oral_cancer_survival_predictor.git
 cd oral_cancer_survival_predictor
 ```
 Install dependencies:
@@ -71,7 +71,7 @@ docker run --rm oral_cancer_predictor
 ```
 Run Container with Custom Inputs
 ```
-docker run --rm oral_cancer_predictor python predict.py --Gender 0 --Tobacco_Use 1 --Family_History_of_Cancer 0 --Cancer_Stage 1 --Oral_Cancer_Diagnosis 1
+docker run --rm oral_cancer_predictor python3 predict.py --Gender 0 --Tobacco_Use 1 --Family_History_of_Cancer 0 --Cancer_Stage 1 --Oral_Cancer_Diagnosis 1
 ```
 ## Notes
 Make sure the models/ directory contains trained model files (*.pkl).
@@ -83,3 +83,4 @@ The models expect the features in this order:
 > Gender, Tobacco Use, Family History of Cancer, Cancer Stage, Oral Cancer (Diagnosis)
 ## License
 MIT License
+
