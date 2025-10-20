@@ -14,9 +14,9 @@ export interface ApiInput{
     diagnosis: number
 }
 
-interface Prediction{
-    category: number
-    label: string
+export interface Prediction{
+    category: string
+    label: number
 }
 
 export interface ApiOutput{

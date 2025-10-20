@@ -10,6 +10,9 @@ export const callApi = async(
         },
         body: JSON.stringify(input)
     })
+    if (!response.ok){
+        throw new Error('Prediction request failed')
+    }
 
     return response.json()
 }
