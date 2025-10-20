@@ -1,10 +1,12 @@
-from fastapi import FastAPI 
+import traceback
+from typing import Literal
+from pydantic import BaseModel, ValidationError
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import joblib
-from pydantic import BaseModel
 import numpy as np
 import uvicorn
-from typing import Literal
+
 
 class Param(BaseModel):
     gender: Literal[1,0]
@@ -12,7 +14,7 @@ class Param(BaseModel):
     family_history: Literal[1,0]
     cancer_stage: Literal[1,2,3,4,0]
     diagnosis: Literal[1,0]
-    
+
 class Output(BaseModel):
     category: Literal[1,2,3,4,0]
     label: str
@@ -59,45 +61,45 @@ app.add_middleware(
 
 @app.post('/api/predict')
 async def predict(body: Param):
-    
-    features = np.array([[
-        body.gender,
-        body.tobacco_use,
-        body.family_history,
-        body.cancer_stage,
-        body.diagnosis
-    ]])
-    
-    scaled_features = scalar.transform(features)
-    
-    predictions = {}
-    for name, model in models.items():
-        if name == 'knn':
-            input_data = scaled_features
-        else:
-            input_data = features
+    try:
+        features = np.array([[
+            body.gender,
+            body.tobacco_use,
+            body.family_history,
+            body.cancer_stage,
+            body.diagnosis
+        ]])
 
-        pred = model.predict(input_data)[0]
+        scaled_features = scalar.transform(features)
 
-        category, label = resolve_prediction(pred)
-        predictions[name] = {
-            'category': category,
-            'label': label
-        }
+        predictions = {}
+        for name, model in models.items():
+            try:
+                if name == 'knn':
+                    input_data = scaled_features
+                else:
+                    input_data = features
 
-    return {'predictions': predictions}
-        
-           
-def get_label(pred):
-    labels = {
-        0: 'Very Low (<20%)',
-        1: 'Low (20% - 40%)',
-        2: 'Moderate (40% - 60%)',
-        3: 'High (60% - 80%)',
-        4: 'Very High (>80%)'
-    }
-    return(labels[pred])
+                pred = model.predict(input_data)[0]
 
+                category, label = resolve_prediction(pred)
+                predictions[name] = {
+                    'category': category,
+                    'label': label
+                }
+            except Exception as model_err:
+                predictions[name] = {
+                    'category': None,
+                    'label': f"Model prediction failed: {str(model_err)}"
+                }
+
+        return {'predictions': predictions}
+    except ValidationError as ve:
+        raise HTTPException(status_code=422, detail=ve.errors())
+
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 @app.get('/api/health')
 async def health():

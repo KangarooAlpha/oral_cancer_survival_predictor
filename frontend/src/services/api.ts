@@ -1,9 +1,9 @@
 import type { ApiInput, ApiOutput } from "../types/types"
 
-const url = "http://0.0.0.0:8000/api/predict"
+const url:string = import.meta.env.API_URL
 export const callApi = async(
     input: ApiInput): Promise<ApiOutput> => {
-    const response = await fetch(url, {
+    const response = await fetch(`${url}/api/product`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
