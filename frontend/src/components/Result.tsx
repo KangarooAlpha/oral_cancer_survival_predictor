@@ -1,5 +1,5 @@
 import type { ApiOutput } from "../types/types";
-import Card from "./card";
+import Card from "./Card";
 
 interface Props{
     result: ApiOutput

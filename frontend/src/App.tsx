@@ -1,9 +1,9 @@
 
-import Form from './components/form'
+import Form from './components/Form'
 import './App.css'
 import { useState } from 'react'
 import type { ApiOutput } from './types/types'
-import Result from './components/result'
+import Result from './components/Result'
 
 function App() {
   const [result, setResult] = useState<ApiOutput>()
